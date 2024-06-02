@@ -10,28 +10,16 @@ import io.restassured.response.Response;
 public class RestAssuredUtil {
     //Sets Base URI
     public static void setBaseURI() {
-        RestAssured.baseURI = "http://generator.swagger.io/";
+        RestAssured.baseURI = "https://jsonplaceholder.typicode.com/";
     }
 
-    //Sets base path
-    public static void setBasePath(String basePathTerm) {
-        RestAssured.basePath = basePathTerm;
-    }
+
 
     //Reset Base URI (after test)
     public static void resetBaseURI() {
         RestAssured.baseURI = null;
     }
 
-    //Reset base path
-    public static void resetBasePath() {
-        RestAssured.basePath = null;
-    }
-
-    //Sets ContentType
-    public static void setContentType(ContentType Type) {
-        given().contentType(Type);
-    }
 
     //Returns response by given path
     public static Response getResponse(String path) {
@@ -39,7 +27,6 @@ public class RestAssuredUtil {
     }
 
  
-
     //Returns JsonPath object
     public static JsonPath getJsonPath(Response res) {
         String json = res.asString();

@@ -1,35 +1,56 @@
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import utils.TestUtil;
 
-public class BasicApiTest extends BaseTest {
+
+public class BasicApiTest  {
+    public Response response = null; //Response
+    public JsonPath jp  = null; //JsonPath
+    TestUtil testUtil = new TestUtil();
+    
+	 @BeforeMethod
+	    public void setup() {
+		 RestAssured.baseURI = "https://jsonplaceholder.typicode.com/";
+		 
+	    }
 
 	@Test
 	public void T01_GetUsersTest() {
-		res = utils.RestAssuredUtil.getResponse("https://jsonplaceholder.typicode.com/users"); // Call the API using GET
-																								// method
-		testUtil.checkStatusIs200(res); // Test that the response return 200 successful
+	      
 
-		// Count the number of ids you got from the response
-		jp = utils.RestAssuredUtil.getJsonPath(res);
-		System.out.println("Users count: " + testUtil.getClients(jp).size());
+		    // Call the API using GET
+	         response = utils.RestAssuredUtil.getResponse("/users");
+	         jp  = null; //JsonPath
 
-		// Print each id with the relative name
-		for (int i = 0; i < testUtil.getClients(jp).size(); i++) {
+	        testUtil.checkStatusIs200(response); // Test that the response return 200 successful
+	        jp = utils.RestAssuredUtil.getJsonPath(response);
+	        // Print response body
+	        System.out.println("Users count: " + testUtil.getClients(jp).size());
+	     // Print each id with the relative name
+			for (int i = 0; i < testUtil.getClients(jp).size(); i++) {
 			System.out.println("User id: " + jp.getString("[" + i + "].id") + "\t" + "User name: "
 					+ jp.getString("[" + i + "].name"));
 		}
 
 	}
 
-//
+
 	@Test
 	public void T02_GetPostsTest() {
-		res = utils.RestAssuredUtil.getResponse("https://jsonplaceholder.typicode.com/posts"); // Call the API using GET
+		response = utils.RestAssuredUtil.getResponse("/posts"); // Call the API using GET
 																								// method
-		testUtil.checkStatusIs200(res); // Test that the response return 200 successful
-		jp = utils.RestAssuredUtil.getJsonPath(res);
+		testUtil.checkStatusIs200(response); // Test that the response return 200 successful
+		jp = utils.RestAssuredUtil.getJsonPath(response);
 		for (int i = 0; i < testUtil.getClients(jp).size(); i++) {
 			
 			//The id 17 has title “ fugit voluptas sed molestias voluptatem provident “
@@ -37,7 +58,6 @@ public class BasicApiTest extends BaseTest {
 				assertEquals("fugit voluptas sed molestias voluptatem provident", jp.getString("[" + i + "].title"));
 				
 			}
-			
 			//In each object , we have the keys (userid, id body, title) with non empty values
 		    String userId = jp.getString("[" + i + "].userId");
 		    String id = jp.getString("[" + i + "].id");
@@ -52,5 +72,11 @@ public class BasicApiTest extends BaseTest {
 		}
 
 	}
+    @AfterClass
+    public void afterTest() {
+        //Reset Values
+        utils.RestAssuredUtil.resetBaseURI();
+   
+    }
 
 }
